@@ -1,29 +1,33 @@
 package main
 
 import (
-	"bufio"
-	"io"
 	"math/rand"
 )
 
-func ScrambleStr(in string, ti int64) string {
-	rand.Seed(ti)
-	inRune := []rune(in)
-	rand.Shuffle(len(inRune), func(i, j int) {
-		inRune[i], inRune[j] = inRune[j], inRune[i]
+func ScrambleStr(text string, number int64) string {
+	rand.Seed(number)
+	textRune := []rune(text)
+	rand.Shuffle(len(textRune), func(i, j int) {
+		textRune[i], textRune[j] = textRune[j], textRune[i]
 	})
-	return string(inRune)
+	return string(textRune)
 }
 
-func Occurrences(word string, r io.Reader) (int, error) {
-	scanner := bufio.NewScanner(r)
-	wordCount := 0
-	scanner.Split(bufio.ScanWords)
-	for scanner.Scan() {
-		if scanner.Text() == word {
-			wordCount++
-		}
+// Perm calls f with each permutation of a.
+func Perm(a []rune, f func([]rune)) {
+	perm(a, f, 0)
+}
+
+// Permute the values at index i to len(a)-1.
+func perm(a []rune, f func([]rune), i int) {
+	if i > len(a) {
+		f(a)
+		return
 	}
-	return wordCount, scanner.Err()
+	perm(a, f, i+1)
+	for j := i + 1; j < len(a); j++ {
+		a[i], a[j] = a[j], a[i]
+		perm(a, f, i+1)
+		a[i], a[j] = a[j], a[i]
+	}
 }
-
